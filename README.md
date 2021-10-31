@@ -9,7 +9,7 @@ Pretty way of the retrying!
 `Pretry` is a standalone application that has aim to integrate with your system to make your retries more robust and easy way.
 
 To be able to use `Pretry` application that you should need to run the application with below command.
-Our application is available in the public docker repository. Here is the most crucial thing is you need to give a persistent volume to the application itself in your server.
+The application is available in the public docker repository. Here is the most crucial thing is you need to give a persistent volume to the application itself in your server.
 
 `Pretry` uses `MapDB` as a storage, so it does not need to have any additional database technology.
 The only need is that you should provide a persistent volume with named `/data` in your usage.
@@ -17,6 +17,10 @@ The only need is that you should provide a persistent volume with named `/data` 
 ```shell
  docker run -p 8080:8080 --mount source=data,target=/data ufukhalis/pretry
 ```
+
+It's not possible to run more than 1 instances in the same availability zone.
+So, this is due to two reasons. First reason is that if the file(MapDB) opened by an instance then it cannot be opened by another instance.
+And, second reason is that since there is no coordination between instances, there is no make sense to have multiple instances in the same availability zone.
 
 After running the application, then you should need to push some configuration to be able to have retry feature.
 

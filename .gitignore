@@ -32,3 +32,4 @@ build/
 .vscode/
 
 pretry_file.db
+service.hcl
