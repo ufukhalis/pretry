@@ -13,7 +13,7 @@ class DbConfig {
     @Bean
     fun createDb(): DB {
         return DBMaker
-            .fileDB("pretry_file.db")
+            .fileDB("/data/pretry_file.db")
             .fileMmapEnable()
             .make()
     }

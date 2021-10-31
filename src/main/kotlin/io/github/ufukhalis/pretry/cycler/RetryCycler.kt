@@ -4,6 +4,7 @@ import io.github.ufukhalis.pretry.logging.LoggerDelegate
 import io.github.ufukhalis.pretry.model.HttpIntegration
 import io.github.ufukhalis.pretry.model.SqsIntegration
 import io.github.ufukhalis.pretry.service.DbService
+import io.github.ufukhalis.pretry.service.PrettyService
 import kotlinx.coroutines.*
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
@@ -17,7 +18,8 @@ private const val CYCLE_RATE = 60000L
 @Component
 @EnableScheduling
 class RetryCycler(
-    val dbService: DbService
+    val dbService: DbService,
+    val prettyService: PrettyService
 ) {
 
     private val logger by LoggerDelegate()
@@ -42,8 +44,8 @@ class RetryCycler(
                         dbService.getConfig(eventHolder.identifier)?.let { config ->
                             config.toIntegrations().map { integration ->
                                 when(integration) {
-                                    is HttpIntegration -> HttpRetryer(integration)
-                                    is SqsIntegration -> SqsRetryer(integration)
+                                    is HttpIntegration -> HttpRetryer(integration, prettyService)
+                                    is SqsIntegration -> SqsRetryer(integration, prettyService)
                                 }
                             }.forEach {
                                 it.apply(eventHolder.eventBody, eventHolder.identifier)

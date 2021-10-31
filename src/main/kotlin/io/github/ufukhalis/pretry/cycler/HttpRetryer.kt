@@ -4,16 +4,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.ufukhalis.pretry.logging.LoggerDelegate
 import io.github.ufukhalis.pretry.model.HttpIntegration
 import io.github.ufukhalis.pretry.model.Integration
+import io.github.ufukhalis.pretry.service.PrettyService
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.web.client.RestTemplate
 
 
 class HttpRetryer(
-    private val integration: Integration
+    private val integration: Integration,
+    private val prettyService: PrettyService
 ): Retryer {
 
     private val logger by LoggerDelegate()
+
+    private val restTemplate: RestTemplate = RestTemplate()
 
     override fun apply(eventBody: ObjectNode, identifier: String) {
         val httpIntegration = integration as HttpIntegration
@@ -30,7 +35,7 @@ class HttpRetryer(
         } else {
             logger.error("Event could not be pushed to the url for this identifier $identifier")
             logger.warn("Event will be scheduled again if it's not reached its max retry count $identifier")
-            scheduleRetry(eventBody, identifier)
+            scheduleRetry(eventBody, identifier, prettyService)
         }
     }
 }

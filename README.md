@@ -1,3 +1,6 @@
+<a href="https://codeclimate.com/github/ufukhalis/pretry/maintainability"><img src="https://api.codeclimate.com/v1/badges/de189d8ff47d77fc760d/maintainability" /></a>
+<a href="https://hub.docker.com/r/ufukhalis/pretry"><img src="https://img.shields.io/docker/pulls/ufukhalis/pretry.svg" /></a>
+
 # Project Pretry
 Pretty way of the retrying!
 
@@ -8,10 +11,11 @@ Pretty way of the retrying!
 To be able to use `Pretry` application that you should need to run the application with below command.
 Our application is available in the public docker repository. Here is the most crucial thing is you need to give a persistent volume to the application itself in your server.
 
-`Pretry` uses `MapDB` as a storage, so it does not need to have any additional database stack.
+`Pretry` uses `MapDB` as a storage, so it does not need to have any additional database technology.
+The only need is that you should provide a persistent volume with named `/data` in your usage.
 
 ```shell
-
+ docker run -p 8080:8080 --mount source=data,target=/data ufukhalis/pretry
 ```
 
 After running the application, then you should need to push some configuration to be able to have retry feature.
