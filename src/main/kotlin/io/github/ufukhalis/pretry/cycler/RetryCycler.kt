@@ -39,7 +39,9 @@ class RetryCycler(
                 val jobs : List<Job> = dbService.getEvents(lastDate).map { eventHolder ->
 
                     launch(context = Dispatchers.IO) {
-                        logger.info("Event will be processed for this identifier ${eventHolder.identifier}")
+                        logger.info("Event will be processed for this identifier = ${eventHolder.identifier}")
+
+                        logger.info(dbService.getConfig(eventHolder.identifier)?.toString())
 
                         dbService.getConfig(eventHolder.identifier)?.let { config ->
                             config.toIntegrations().map { integration ->
