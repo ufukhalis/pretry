@@ -3,17 +3,18 @@ package io.github.ufukhalis.pretry.config
 import org.mapdb.DB
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.util.concurrent.ConcurrentMap
 
 @Configuration
-class DbConfig {
+class DbConfig (@Value("\${db.file.path}") val path: String){
 
     @Bean
     fun createDb(): DB {
         return DBMaker
-            .fileDB("/data/pretry_file.db")
+            .fileDB(path)
             .fileMmapEnable()
             .make()
     }
