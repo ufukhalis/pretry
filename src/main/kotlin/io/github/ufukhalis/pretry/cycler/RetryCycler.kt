@@ -5,11 +5,11 @@ import io.github.ufukhalis.pretry.model.HttpIntegration
 import io.github.ufukhalis.pretry.model.SqsIntegration
 import io.github.ufukhalis.pretry.service.DbService
 import io.github.ufukhalis.pretry.service.PrettyService
+import io.github.ufukhalis.pretry.service.withoutTime
 import kotlinx.coroutines.*
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import io.github.ufukhalis.pretry.service.withoutTime
 import java.time.LocalDateTime
 
 
@@ -24,7 +24,7 @@ class RetryCycler(
 
     private val logger by LoggerDelegate()
 
-    @Scheduled(fixedRate = CYCLE_RATE, initialDelay = 0)
+    @Scheduled(fixedRate = CYCLE_RATE, initialDelayString = "\${pretry.initial-delay}")
     fun startCycler() {
         val currentDate = LocalDateTime.now().withoutTime()
         var lastDate = dbService.getLastDate()

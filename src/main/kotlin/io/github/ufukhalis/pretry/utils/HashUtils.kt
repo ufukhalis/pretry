@@ -1,8 +1,12 @@
 package io.github.ufukhalis.pretry.utils
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import java.security.MessageDigest
 
 object HashUtils {
+
+    fun hash(identifier: String, eventBody: ObjectNode) = sha256("${identifier}${eventBody}")
+
     fun sha512(input: String) = hashString("SHA-512", input)
 
     fun sha256(input: String) = hashString("SHA-256", input)

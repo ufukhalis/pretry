@@ -1,6 +1,8 @@
 package io.github.ufukhalis.pretry.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.ufukhalis.pretry.TestUtils.deleteDb
+import io.github.ufukhalis.pretry.TestUtils.identifier
+import io.github.ufukhalis.pretry.TestUtils.objectMapper
 import io.github.ufukhalis.pretry.model.CreateConfigRequest
 import io.github.ufukhalis.pretry.model.ScheduleRetryRequest
 import org.junit.jupiter.api.MethodOrderer
@@ -13,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
-import java.io.File
 import java.util.*
 
 @SpringBootTest
@@ -21,12 +22,8 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class PretryControllerTests @Autowired constructor(val mockMvc: MockMvc) {
 
-    private val identifier = "identifier-1"
-
-    private val objectMapper: ObjectMapper = ObjectMapper()
-
     init {
-        File("pretry_file.db").delete()
+        deleteDb()
     }
 
     @Order(1)

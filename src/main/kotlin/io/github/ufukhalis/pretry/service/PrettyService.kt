@@ -23,7 +23,7 @@ class PrettyService(
     }
 
     fun scheduleRetry(request: ScheduleRetryRequest): ResponseEntity<String> {
-        val hash = HashUtils.sha256("${request.identifier}${request.eventBody}")
+        val hash = HashUtils.hash(request.identifier, request.eventBody)
 
         val retryStatus = getRetryStatus(hash, request.identifier)
 
