@@ -1,5 +1,6 @@
 <a href="https://codeclimate.com/github/ufukhalis/pretry/maintainability"><img src="https://api.codeclimate.com/v1/badges/de189d8ff47d77fc760d/maintainability" /></a>
 <a href="https://hub.docker.com/r/ufukhalis/pretry"><img src="https://img.shields.io/docker/pulls/ufukhalis/pretry.svg" /></a>
+<img src="https://raw.githubusercontent.com/ufukhalis/pretry/master/.github/badges/jacoco.svg">
 
 # Project Pretry
 Pretty way of the retrying!
