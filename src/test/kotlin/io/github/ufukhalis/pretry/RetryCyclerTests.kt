@@ -41,7 +41,7 @@ class RetryCyclerTests @Autowired constructor(val dbService: DbService) {
     @Order(1)
     @Test
     fun `should retry the past events from db` () {
-        Thread.sleep(10000L)
+        Thread.sleep(15000L)
         verify(1, postRequestedFor(
             urlEqualTo("/url")
         ))
