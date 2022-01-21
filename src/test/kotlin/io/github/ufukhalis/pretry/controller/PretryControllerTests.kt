@@ -1,7 +1,6 @@
 package io.github.ufukhalis.pretry.controller
 
 import io.github.ufukhalis.pretry.TestUtils.deleteDb
-import io.github.ufukhalis.pretry.TestUtils.identifier
 import io.github.ufukhalis.pretry.TestUtils.objectMapper
 import io.github.ufukhalis.pretry.model.CreateConfigRequest
 import io.github.ufukhalis.pretry.model.ScheduleRetryRequest
@@ -21,6 +20,8 @@ import java.util.*
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class PretryControllerTests @Autowired constructor(val mockMvc: MockMvc) {
+
+    private val identifier = "controller-identifier"
 
     init {
         deleteDb()

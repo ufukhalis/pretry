@@ -41,8 +41,6 @@ class RetryCycler(
                     launch(context = Dispatchers.IO) {
                         logger.info("Event will be processed for this identifier = ${eventHolder.identifier}")
 
-                        logger.info(dbService.getConfig(eventHolder.identifier)?.toString())
-
                         dbService.getConfig(eventHolder.identifier)?.let { config ->
                             config.toIntegrations().map { integration ->
                                 when(integration) {

@@ -2,7 +2,6 @@ package io.github.ufukhalis.pretry
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import io.github.ufukhalis.pretry.TestUtils.identifier
 import io.github.ufukhalis.pretry.TestUtils.objectMapper
 import io.github.ufukhalis.pretry.model.CreateConfigRequest
 import io.github.ufukhalis.pretry.model.EventHolder
@@ -18,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.SocketUtils
 import java.time.LocalDateTime
+import java.util.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,6 +26,8 @@ import java.time.LocalDateTime
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RetryCyclerTests @Autowired constructor(val dbService: DbService) {
+
+    private val identifier = UUID.randomUUID().toString()
 
     init {
         TestUtils.deleteDb()

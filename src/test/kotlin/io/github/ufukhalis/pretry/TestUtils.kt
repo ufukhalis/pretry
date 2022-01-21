@@ -6,7 +6,6 @@ import java.io.File
 object TestUtils {
 
     val objectMapper = ObjectMapper()
-    const val identifier = "identifier"
 
     fun deleteDb() {
         File("pretry_file.db").delete()
