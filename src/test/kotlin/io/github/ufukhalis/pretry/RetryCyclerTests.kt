@@ -45,9 +45,9 @@ class RetryCyclerTests @Autowired constructor(val dbService: DbService) {
         val availableWireMockPort = SocketUtils.findAvailableTcpPort()
         setupWireMock(availableWireMockPort)
         val availableSqsPort = SocketUtils.findAvailableTcpPort()
+        setupDb(availableWireMockPort, availableSqsPort)
         setupSqs(availableSqsPort)
         sqsClient = testSqsClient(availableSqsPort)
-        setupDb(availableWireMockPort, availableSqsPort)
     }
 
     @Order(1)
