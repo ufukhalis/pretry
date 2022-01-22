@@ -2,6 +2,7 @@ package io.github.ufukhalis.pretry
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import io.findify.sqsmock.SQSService
 import io.github.ufukhalis.pretry.TestUtils.objectMapper
 import io.github.ufukhalis.pretry.model.CreateConfigRequest
 import io.github.ufukhalis.pretry.model.EventHolder
@@ -16,6 +17,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.SocketUtils
+import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.sqs.SqsClient
+import software.amazon.awssdk.services.sqs.model.CreateQueueRequest
+import java.net.URI
 import java.time.LocalDateTime
 import java.util.*
 
@@ -28,6 +34,7 @@ import java.util.*
 class RetryCyclerTests @Autowired constructor(val dbService: DbService) {
 
     private val identifier = UUID.randomUUID().toString()
+    private lateinit var sqsClient: SqsClient
 
     init {
         TestUtils.deleteDb()
@@ -37,7 +44,10 @@ class RetryCyclerTests @Autowired constructor(val dbService: DbService) {
     fun `setup data` () {
         val availableWireMockPort = SocketUtils.findAvailableTcpPort()
         setupWireMock(availableWireMockPort)
-        setupDb(availableWireMockPort)
+        val availableSqsPort = SocketUtils.findAvailableTcpPort()
+        setupSqs(availableSqsPort)
+        sqsClient = testSqsClient(availableSqsPort)
+        setupDb(availableWireMockPort, availableSqsPort)
     }
 
     @Order(1)
@@ -60,8 +70,28 @@ class RetryCyclerTests @Autowired constructor(val dbService: DbService) {
             ).willReturn(aResponse().withStatus(200))
         )
     }
+    
+    private fun setupSqs(port: Int) {
+        val sqs = SQSService(port, 1)
+        sqs.start()
+    }
 
-    private fun setupDb(port: Int) {
+    private fun testSqsClient(port: Int): SqsClient {
+        val client = SqsClient.builder()
+            .region(Region.of("eu-central-1"))
+            .endpointOverride(URI.create("http://localhost:$port"))
+            .credentialsProvider(AnonymousCredentialsProvider.create())
+            .build()
+
+        client.createQueue(
+            CreateQueueRequest.builder()
+                .queueName("sqs")
+                .build()
+        )
+        return client
+    }
+
+    private fun setupDb(httpPort: Int, sqsPort: Int) {
         val config = CreateConfigRequest(
             identifier = identifier,
             maxRetry = 1,
@@ -70,9 +100,17 @@ class RetryCyclerTests @Autowired constructor(val dbService: DbService) {
                 IntegrationRequest(
                     type = IntegrationType.HTTP,
                     config = objectMapper.createObjectNode()
-                        .put("url", "http://localhost:$port/url")
+                        .put("url", "http://localhost:$httpPort/url")
                         .put("username", "username")
                         .put("password", "password")
+                ),
+                IntegrationRequest(
+                    type = IntegrationType.SQS,
+                    config = objectMapper.createObjectNode()
+                        .put("url", "http://localhost:$sqsPort/1/sqs")
+                        .put("region", "eu-central-1")
+                        .put("secretKey", "test")
+                        .put("accessKey", "test")
                 )
             )
         )

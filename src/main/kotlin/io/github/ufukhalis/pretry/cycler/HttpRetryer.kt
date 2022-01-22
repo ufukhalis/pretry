@@ -31,10 +31,10 @@ class HttpRetryer(
 
         val response = restTemplate.exchange(httpIntegration.url, HttpMethod.POST, request, String::class.java)
         if (response.statusCode.is2xxSuccessful) {
-            logger.info("Event successfully pushed to the url for this identifier $identifier")
+            logger.info("Event successfully pushed to the url for this identifier = $identifier")
         } else {
             logger.error("Event could not be pushed to the url for this identifier $identifier")
-            logger.warn("Event will be scheduled again if it's not reached its max retry count $identifier")
+            logger.warn("Event will be scheduled again if it's not reached its max retry count for this identifier = $identifier")
             scheduleRetry(eventBody, identifier, prettyService)
         }
     }

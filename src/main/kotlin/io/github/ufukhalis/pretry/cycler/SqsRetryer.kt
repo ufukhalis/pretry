@@ -5,11 +5,13 @@ import io.github.ufukhalis.pretry.logging.LoggerDelegate
 import io.github.ufukhalis.pretry.model.Integration
 import io.github.ufukhalis.pretry.model.SqsIntegration
 import io.github.ufukhalis.pretry.service.PrettyService
+import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
 import software.amazon.awssdk.auth.credentials.AwsCredentials
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sqs.SqsClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
+import java.net.URI
 
 class SqsRetryer(
     private val integration: Integration,
@@ -33,8 +35,8 @@ class SqsRetryer(
         runCatching {
             sqsClient.sendMessage(messageRequest)
         }.onFailure {
-            logger.error("Event could not be pushed to SQS for this identifier $identifier")
-            logger.warn("Event will be scheduled again if it's not reached its max retry count $identifier")
+            logger.error("Event could not be pushed to SQS for this identifier $identifier cause $it")
+            logger.warn("Event will be scheduled again if it's not reached its max retry count for this identifier = $identifier")
 
             scheduleRetry(eventBody, identifier, prettyService)
         }.onSuccess {
@@ -43,8 +45,11 @@ class SqsRetryer(
 
     }
 
-    private fun buildSqsClient(sqsIntegration: SqsIntegration) =
-        SqsClient.builder()
+    private fun buildSqsClient(sqsIntegration: SqsIntegration): SqsClient {
+        if (sqsIntegration.accessKey == "test") {
+            return prepareLocalClient(sqsIntegration)
+        }
+        return SqsClient.builder()
             .region(Region.of(sqsIntegration.region))
             .credentialsProvider(
                 StaticCredentialsProvider.create(
@@ -59,4 +64,12 @@ class SqsRetryer(
                     }
                 )
             ).build()
+    }
+
+
+    private fun prepareLocalClient(sqsIntegration: SqsIntegration) = SqsClient.builder()
+        .region(Region.of(sqsIntegration.region))
+        .endpointOverride(URI.create(sqsIntegration.url.substring(0, sqsIntegration.url.indexOf("/1"))))
+        .credentialsProvider(AnonymousCredentialsProvider.create())
+        .build()
 }
